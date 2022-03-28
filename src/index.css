@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #777777
 }
 
 code {
@@ -18,7 +19,7 @@ code {
   position: fixed;
   height: 5000px;
   width:100%;  
-  top: 0%;
+  top: 0%;  
   left: 0%;
 }
 
