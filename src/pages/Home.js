@@ -4,6 +4,7 @@ import ProductCard from "../components/ProductCard";
 import UserContext from "../UserContext";
 
 import Dasboard from "../pages/Dashboard";
+import Loader from "../components/Loader";
 
 export default function Home() {
   const { user } = useContext(UserContext);
@@ -25,7 +26,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchData();
-    console.log(user)
+    console.log(user);
   }, []);
 
   return (
@@ -36,7 +37,7 @@ export default function Home() {
         <>
           <h1>Home</h1>
           <h2>Our Hot Items</h2>
-          <Row>{hotItems}</Row>
+          <Row> {hotItems.length === 0 ? <Loader /> : hotItems}</Row>
         </>
       )}
     </Container>

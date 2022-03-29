@@ -12,9 +12,11 @@ import Orders from "./pages/Orders";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Footer from "./components/Footer";
+import Page404 from "./pages/Page404";
 
 function App() {
   const [user, setUser] = useState({ id: null, isAdmin: null });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const unsetUser = () => {
     localStorage.clear();
@@ -37,6 +39,7 @@ function App() {
             id: data._id,
             isAdmin: data.isAdmin,
           });
+          setIsAuthenticated(true);
         } else {
           setUser({
             id: null,
@@ -50,16 +53,25 @@ function App() {
     <UserProvider value={{ user, setUser, unsetUser }}>
       <Router>
         <NavBar />
-        <Switch>          
-        <Route exact path="/" component={Home} />
-        <Route exact path="/home" component={Home} />
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/home" component={Home} />
           <Route exact path="/products/:productId" component={ProductDetails} />
-          <Route exact path="/cart" component={Cart} />
-          <Route exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/orders" component={Orders} />
           <Route exact path="/products" component={Products} />
           <Route exact path="/login" component={Login} />
-          <Route exact path="/register" component={Register} />          
+          <Route exact path="/register" component={Register} />
+
+          {isAuthenticated && !user.isAdmin ? ( // Registered only user routes
+            <Route exact path="/cart" component={Cart} />
+          ) : null}
+
+          {isAuthenticated && user.isAdmin ? ( // Admin Only routes
+            <>
+              <Route exact path="/dashboard" component={Dashboard} />
+              <Route exact path="/orders" component={Orders} />
+            </>
+          ) : null}
+          <Route component={Page404} />
         </Switch>
         <Footer />
       </Router>

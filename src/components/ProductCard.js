@@ -7,6 +7,9 @@ import { useState, useEffect, useContext } from "react";
 
 import "./ProductCard.scss";
 
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+
 export default function ProductCard({ product }) {
   const { user } = useContext(UserContext);
 
@@ -27,7 +30,7 @@ export default function ProductCard({ product }) {
             <Card.Subtitle>{productName}</Card.Subtitle>
             <Card.Text className={"description"}>{description} - {color}</Card.Text>
           </Card.Body>
-          <Card.Body className={""}>            
+          <Card.Body className={""}>                   
             <Card.Text className={"float-start"}>{`${formatNumber(price)}`}</Card.Text>            
             <Card.Text className={"float-end"}>{`${rating}`} sold</Card.Text>
           </Card.Body>

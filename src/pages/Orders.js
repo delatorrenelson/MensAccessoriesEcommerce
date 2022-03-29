@@ -1,8 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useContext} from "react";
 import { Container } from "react-bootstrap";
+import Loader from "../components/Loader"
+import UserContext from "../UserContext";
 
 export default function Orders() {
+  const { user, setUser } = useContext(UserContext);
+  
   const [orders, setOrders] = useState([]);
+  const [onLoadData, setLoadData] = useState(true);
+  
   const token = localStorage.getItem("token");
 
   const getOrders = () => {

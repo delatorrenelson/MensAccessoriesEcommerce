@@ -4,6 +4,9 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FaSearch } from "react-icons/fa";
 import {Container, Row, Col, InputGroup, FormControl} from "react-bootstrap"
 import ProductCard from "../components/ProductCard";
+import Loader from "../components/Loader"
+
+import "./UserView.scss"
 
 export default function UserView(props){
     const [products, setProducts] = useState([]);      
@@ -72,9 +75,10 @@ export default function UserView(props){
           </Col> */}
         </Row>
   
-        <Row className="d-flex">
+        <Row className="">
           {productList.length === 0 ? (
-            <h1 className="text-center">No Result for for '{keyword}'</h1>
+            
+            <Loader/>
           ) : (
             productList
           )}

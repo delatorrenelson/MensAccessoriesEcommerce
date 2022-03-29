@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect} from "react";
+import { useContext, useState, useEffect } from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
@@ -10,11 +10,11 @@ import { Link, useHistory } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 
 export default function NavBar() {
-  const { user, unsetUser,setUser } = useContext(UserContext);
+  const { user, unsetUser, setUser } = useContext(UserContext);
   const [userCart, setUserCart] = useState(
     JSON.parse(localStorage.getItem("cart"))
   );
-  
+
   const history = useHistory();
 
   const logout = () => {
@@ -24,9 +24,7 @@ export default function NavBar() {
 
   // const userCartCount = userCart.length;
 
-  
-
-  useEffect(() => {},[userCart])
+  useEffect(() => {}, [userCart]);
 
   return (
     <Navbar bg="light" expand="sm" sticky="top" className={"mb-4"}>
@@ -53,11 +51,15 @@ export default function NavBar() {
             </>
           ) : (
             <>
-              <Link className="nav-link" to="/orders">Orders</Link>
-              <Link className="nav-link" to="/cart">
-                Cart 
-                {/* <Badge bg="danger">{userCartCount}</Badge> */}
+              <Link className="nav-link" to="/orders">
+                Orders
               </Link>
+              {!user.isAdmin ? (
+                <Link className="nav-link" to="/cart">
+                  Cart
+                  {/* <Badge bg="danger">{userCartCount}</Badge> */}
+                </Link>
+              ) : null}
               <Link className="nav-link" to="/" onClick={logout}>
                 Log Out
               </Link>
