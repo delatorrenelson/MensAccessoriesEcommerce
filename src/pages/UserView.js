@@ -11,32 +11,59 @@ import "./UserView.scss"
 export default function UserView(props){
     const [products, setProducts] = useState([]);      
     const [keyword, setKeyWord] = useState("");  
+    const [isMounted, setIsMounted] = useState(true)
+    
     const fetchData = () => {
-        fetch(`${process.env.REACT_APP_API_URL}/products`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data) {
-              setProducts(data.filter((product) => product.isActive === true));
-            }
-          });
+      fetch(`${process.env.REACT_APP_API_URL}/products`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          let activeProduct = data.filter((product) => product.isActive === true)
+          setProducts(activeProduct);                       
+        }
+      });        
       };
     
+      const searchProduct = (e) => {        
+        if (e !== "" || e !== null) {
+          setKeyWord(e.toLowerCase());
+    
+          setProducts(
+            products.filter((product) => {
+              product.productName &&
+                product.productName.toLowerCase().includes(keyword);
+            })
+          );
+        }
+      };      
+
       const getProducts = (e) => {
         setKeyWord(e.target.value);
-        let path =
-          keyword === ""
-            ? `${process.env.REACT_APP_API_URL}/products`
-            : `${process.env.REACT_APP_API_URL}/products/q/${keyword}`;
+        
+        // let path =
+        //   keyword === ""
+        //     ? `${process.env.REACT_APP_API_URL}/products`
+        //     : `${process.env.REACT_APP_API_URL}/products/q/${keyword}`;
     
-        if (e.key === "Enter") {
-          fetch(path)
-            .then((res) => res.json())
-            .then((data) => (data ? setProducts(data) : null));
-        }
+        // if (e.key === "Enter") {
+        //   fetch(path)
+        //     .then((res) => res.json())
+        //     .then((data) => (data ? setProducts(data) : null));
+        // }
       };
     
+
       useEffect(() => {
-        fetchData();
+        
+        if(isMounted){
+          fetchData()
+        }            
+        
+        return () => {
+          setIsMounted(false)
+        }
+
+        
       }, []);
     
       const productList = products.map((product) => (
@@ -52,27 +79,14 @@ export default function UserView(props){
                 <FaSearch />
               </InputGroup.Text>
               <FormControl
-                onChange={(e) => getProducts(e)}
-                onKeyUp={(e) => getProducts(e)}
+                onChange={(e) => searchProduct(e)}
+                // onKeyUp={(e) => getProducts(e)}
                 type="text"
                 placeholder="Search..."
                 aria-label="Search..."
               />
             </InputGroup>
           </Col>
-          {/* <Col>
-            {user.isAdmin ? (
-              <div className={"clearfix"}>
-                <Button
-                  size="sm"
-                  className={"float-end"}
-                  onClick={() => setProductFormShow(true)}
-                >
-                  <FontAwesomeIcon icon={faPlus} />
-                </Button>
-              </div>
-            ) : null}
-          </Col> */}
         </Row>
   
         <Row className="">
@@ -83,10 +97,6 @@ export default function UserView(props){
             productList
           )}
         </Row>
-        {/* <ProductForm
-          show={productFormShow}
-          onHide={() => setProductFormShow(false)}
-        /> */}
       </Container>
     )
 }

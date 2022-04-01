@@ -19,12 +19,14 @@ export default function NavBar() {
 
   const logout = () => {
     unsetUser();
-    history.push("/login"); // redirect to login page
+    history.push("/login");
   };
 
-  // const userCartCount = userCart.length;
+  const userCartCount = userCart !== null ? userCart.length : 0;
 
-  useEffect(() => {}, [userCart]);
+  useEffect(() => {
+    setUserCart(JSON.parse(localStorage.getItem("cart")));
+  }, [user]);
 
   return (
     <Navbar bg="light" expand="sm" sticky="top" className={"mb-4"}>
@@ -51,18 +53,43 @@ export default function NavBar() {
             </>
           ) : (
             <>
-              <Link className="nav-link" to="/orders">
-                Orders
-              </Link>
               {!user.isAdmin ? (
-                <Link className="nav-link" to="/cart">
-                  Cart
-                  {/* <Badge bg="danger">{userCartCount}</Badge> */}
-                </Link>
-              ) : null}
-              <Link className="nav-link" to="/" onClick={logout}>
+                <>
+                  {" "}
+                  <Nav.Item>
+                    <Link
+                      className="nav-link nav-link-sm  position-relative"
+                      to="/cart"
+                    >
+                      Cart
+                      {userCartCount > 0 ? (
+                        <Badge
+                          bg="danger"
+                          className="position-absolute translate-middle badge rounded-pill bg-danger"
+                        >
+                          {userCartCount}
+                        </Badge>
+                      ) : null}
+                    </Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Link className="nav-link" to="/orders">
+                      My Orders
+                    </Link>
+                  </Nav.Item>
+                </>
+              ) : (
+                <Nav.Item>
+                <Link className="nav-link" to="/orders">
+                  Orders
+                </Link>                  
+                </Nav.Item>
+              )}
+              <Nav.Item>
+              <Link className="nav-link" to="/home" onClick={logout}>
                 Log Out
-              </Link>
+              </Link>                
+              </Nav.Item>
             </>
           )}
         </Nav>

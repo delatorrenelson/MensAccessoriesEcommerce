@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useMemo } from "react";
+import { Redirect, useHistory } from "react-router-dom";
 import {
   Button,
   Table,
@@ -8,6 +8,7 @@ import {
   Col,
   FormControl,
   Row,
+  Modal,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -19,10 +20,14 @@ import { FaSearch } from "react-icons/fa";
 
 import "./ProductTable.scss";
 
+import EditProduct from "../pages/EditProduct";
+import { Link } from "react-router-dom";
+
 export default function ProductTable({ props }) {
   const [tableRows, setTableRows] = useState([]);
   const [products, setProducts] = useState([]);
   const [keyword, setKeyWord] = useState("");
+  const [currentProduct, setCurrentProduct] = useState();
 
   const [productId, setProductId] = useState("");
   const [price, setPrice] = useState(0);
@@ -30,14 +35,9 @@ export default function ProductTable({ props }) {
   const [stock, setStock] = useState(0);
   const [isActive, setIsActive] = useState(false);
 
-  const [onEditMode, setOnEditMode] = useState({ obj: null, editMode: false });
-
+  const [modalShow, setModalShow] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
   const token = localStorage.getItem("token");
-
-  const cellInput = (prdct) => {
-    setOnEditMode({ obj: prdct, editMode: true });
-    console.log(prdct._id);
-  };
 
   const fetchData = () => {
     fetch(`${process.env.REACT_APP_API_URL}/products`)
@@ -49,88 +49,72 @@ export default function ProductTable({ props }) {
       });
   };
 
-  const toggleAvailability = (product) => {
-    fetch(`${process.env.REACT_APP_API_URL}/products/${product._id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ isActive: !product.isActive }),
-    })
+  const searchProduct = (e) => {
+    console.log(e)
+    if(e !== ""){
+      fetch(`${process.env.REACT_APP_API_URL}/products/q/${e}`)
       .then((res) => res.json())
       .then((data) => {
         if (data) {
+          console.log(data)
+          setProducts(data);        
         }
       });
-  };
-
-  const getProducts = (e) => {
-    setKeyWord(e.target.value);
-    let path =
-      keyword === ""
-        ? `${process.env.REACT_APP_API_URL}/products`
-        : `${process.env.REACT_APP_API_URL}/products/q/${keyword}`;
-
-    if (e.key === "Enter") {
-      fetch(path)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data) {
-            setProducts(data);
-          }
-        });
+    }else{
+      fetchData()
     }
   };
 
-  const popuplateTable = () => {
-    const rows = products.map((product) => {
-      return (
-        <tr key={product._id}>
-          <td>{product.productName}</td>
-          <EditableCell {...product} />
-          <td>{formatNumber(product.price)}</td>
-          <td className="text-end">{product.stock}</td>
-          <td>
-            <img
-              className="img-thumbnail product-thumbnail"
-              src={product.imageURL}
-            />
-          </td>
-          <td>
-            <Button variant="primary" className="m-2" size="sm">
-              Update
-            </Button>
-            {product.isActive ? (
-              <Button
-                className="m-2"
-                size="sm"
-                variant="danger"
-                onClick={(e) => toggleAvailability(product)}
-              >
-                Disable
-              </Button>
-            ) : (
-              <Button
-                className="m-2"
-                size="sm"
-                variant="success"
-                onClick={(e) => toggleAvailability(product)}
-              >
-                Enable
-              </Button>
-            )}
-          </td>
-        </tr>
-      );
-    });
-    setTableRows(rows);
+  useEffect(() => {
+    if (isMounted) {
+      fetchData();
+    }
+
+    return () => {
+      setIsMounted(false);
+    };
+  }, [products]);
+
+  const history = useHistory();
+
+  const [isEdit, setIsEdit] = useState(true);
+
+  const handleRowClick = (product) => {
+    history.push({ pathname: `/products/${product._id}`, state: product });
   };
 
-  useEffect(() => {
-    fetchData();
-    popuplateTable();
-  }, [products]);
+  const addProduct = () => {
+    history.push({ pathname: `/addProduct` });
+  };
+
+  const rows = products.map((product, i) => {
+    return (
+      <tr
+        key={product._id}
+        className={product.isActive ? "" : "table-danger"}
+        onClick={() => handleRowClick(product)}
+      >
+        <td>
+          {i + 1}
+          {". "}
+        </td>
+        <td>{product.productName}</td>
+        <td className="">{product.description}</td>
+        <td className="">{product.color}</td>
+        <td className="">{product.category}</td>
+        <td className="text-center">{formatNumber(product.price)}</td>
+        <td className="text-center">{product.stock}</td>
+
+        <td className="text-end">
+          <img
+            className="img-thumbnail product-thumbnail"
+            src={product.imageURL}
+            alt={product.productName}
+          />
+        </td>
+      </tr>
+    );
+  });
 
   return (
     <Container>
@@ -142,8 +126,7 @@ export default function ProductTable({ props }) {
               <FaSearch />
             </InputGroup.Text>
             <FormControl
-              onChange={(e) => getProducts(e)}
-              onKeyUp={(e) => getProducts(e)}
+              onChange={(e) => searchProduct(e.target.value)}
               type="text"
               placeholder="Search..."
               aria-label="Search..."
@@ -152,66 +135,50 @@ export default function ProductTable({ props }) {
         </Col>
         <Col>
           <div className={"clearfix"}>
-            <Button size="sm" className={"float-end"}>
-              <FontAwesomeIcon icon={faPlus} />
+            <Button
+              size="sm"
+              className={"float-end"}
+              onClick={() => {
+                addProduct();
+              }}
+            >
+              Add Product <FontAwesomeIcon icon={faPlus} />
             </Button>
           </div>
         </Col>
       </Row>
-      <Table size="sm" className="mt-4" hover>
-        {products.length > 0 ? (
-          <>
-            <thead>
-              <tr>
-                <td className="fw-bold text-muted text-capitalize text-start">
-                  Product Name
-                </td>
-                <td className="fw-bold text-muted text-capitalize text-center">
-                  Description
-                </td>
-                <td className="fw-bold text-muted text-capitalize text-center">
-                  Price
-                </td>
-                <td className="fw-bold text-muted text-capitalize text-center">
-                  Stocks
-                </td>
-                <td className="fw-bold text-muted text-capitalize text-center">
-                  Image
-                </td>
-                <td
-                  colSpan={2}
-                  className="fw-bold text-muted text-capitalize text-center"
-                >
-                  Actions
-                </td>
-              </tr>
-            </thead>
-            <tbody>{tableRows}</tbody>
-          </>
-        ) : (
-          <Loader />
-        )}
-      </Table>
-    </Container>
-  );
-}
 
-function EditableCell({ props }) {
-  const [editMode, setEditMode] = useState({
-    product: props,
-    field: null,
-    onEditMode: false,
-  });
-
-  return (
-    <>
-      {editMode.onEditMode ? (
-        <td>
-          <input type="text" value={""} />
-        </td>
+      {products.length > 0 ? (
+        <Table size="sm" className="mt-4" hover>
+          <thead>
+            <tr>
+              <td className="fw-bold text-muted text-capitalize text-start">
+                #
+              </td>
+              <td className="fw-bold text-muted text-capitalize text-start">
+                Product Name
+              </td>
+              <td className="fw-bold text-muted text-capitalize">
+                Description
+              </td>
+              <td className="fw-bold text-muted text-capitalize">Color</td>
+              <td className="fw-bold text-muted text-capitalize">Category</td>
+              <td className="fw-bold text-muted text-capitalize text-center">
+                Price
+              </td>
+              <td className="fw-bold text-muted text-capitalize text-center">
+                Stocks
+              </td>
+              <td className="fw-bold text-muted text-capitalize text-center">
+                Image
+              </td>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </Table>
       ) : (
-        <td>{editMode.field}</td>
+        <Loader />
       )}
-    </>
+    </Container>
   );
 }

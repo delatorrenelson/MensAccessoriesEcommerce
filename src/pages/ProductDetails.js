@@ -27,21 +27,36 @@ export default function ProductDetails(props) {
   const [stock, setStock] = useState(props.location.state.stock);
   const [subTotal, setSubTotal] = useState(0);
   const [quantity, setQuantity] = useState(0);
+  const [imageURL, setImageURL] = useState(props.location.state.imageURL);
   const [userCart, setUserCart] = useState(
-    JSON.parse(localStorage.getItem("cart"))
+    JSON.parse(localStorage.getItem("cart")) || 0
   );
 
   const toast = () => {
     return (
-      <Toast onClose={() => setShow(false)} show={show} delay={2500} autohide>
+      <Toast
+        className="toast align-items-center text-white bg-success border-0"
+        onClose={() => setShow(false)}
+        show={show}
+        delay={2500}
+        autohide
+      >
         <Toast.Body>Successfully add item to your cart.</Toast.Body>
       </Toast>
     );
   };
 
   const addToCart = () => {
-    const { productName, _id, color, description, price, rating, stock } =
-      props.location.state;
+    const {
+      productName,
+      _id,
+      color,
+      description,
+      price,
+      rating,
+      stock,
+      imageURL,
+    } = props.location.state;
 
     let currentItem = {
       _id: _id,
@@ -49,10 +64,11 @@ export default function ProductDetails(props) {
       productName: productName,
       description: description,
       rating: rating,
-      unitPrice: price,
+      price: price,
       quantity: quantity,
       subTotal: subTotal,
       stock: stock,
+      imageURL: imageURL,
     };
 
     let cart = userCart;
@@ -79,23 +95,18 @@ export default function ProductDetails(props) {
     }
   };
 
-  const addToCartButton =
-    !user.isAdmin && user.id && quantity > 0 ? (
-      <Button size="sm" variant="primary" onClick={() => addToCart()}>
-        {formatNumber(subTotal)} <FontAwesomeIcon icon={faCartPlus} />
-      </Button>
-    ) : (
-      <small>0 item</small>
+  const zeroStock = () => {
+    return (
+      <Alert variant="danger">
+        <p>No Stocks available for now.</p>
+      </Alert>
     );
+  };
 
   const cartItemControl = () => {
-    if (user.isAdmin) {
-      return <></>;
-    }
-
     if (user.id && !user.isAdmin) {
       return (
-        <div className={"d-flex d-flex-row"}>
+        <div className={"product-order-controller d-flex d-flex-row"}>
           <InputGroup size="sm" style={{ width: "8rem", marginRight: "2rem" }}>
             <FormControl
               min="0"
@@ -106,7 +117,13 @@ export default function ProductDetails(props) {
             />
           </InputGroup>
 
-          {addToCartButton}
+          {quantity > 0 ? (
+            <Button size="sm" variant="primary" onClick={() => addToCart()}>
+              {formatNumber(subTotal)} <FontAwesomeIcon icon={faCartPlus} />
+            </Button>
+          ) : (
+            <small></small>
+          )}
           {toast()}
         </div>
       );
@@ -129,15 +146,21 @@ export default function ProductDetails(props) {
     <Container className={"my-3"}>
       <Row>
         <Col>
-          <img
-            alt={`${productName}`}
-            src={`https://via.placeholder.com/300?text=${productName}`}
-          />
+        {imageURL !== "" ? (
+            <img alt={`${productName}`} src={imageURL} />
+          ) : (
+            <img
+              alt={`${productName}`}
+              src={`https://via.placeholder.com/300?text=${productName}`}
+            />
+          )}
+        </Col>
+        <Col>
           <h3>{productName}</h3>
           <p>{description}</p>
           <p>{formatNumber(price)}</p>
           <p>Stocks: {stock}</p>
-          {cartItemControl()}
+          {stock !== 0 ? cartItemControl() : zeroStock()}
         </Col>
       </Row>
     </Container>

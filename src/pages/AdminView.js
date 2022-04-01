@@ -19,7 +19,6 @@ import ProductTable from "../components/ProductTable";
 import Loader from "../components/Loader"
 
 export default function AdminView(props) {
-  
   const [products, setProducts] = useState([]);
   const [productFormShow, setProductFormShow] = useState(false);
   const [keyword, setKeyWord] = useState("");
@@ -53,12 +52,9 @@ export default function AdminView(props) {
   ));
   
   
-    
-
-  useEffect(() => {
-    
+  useEffect(() => {    
     fetchData();
-  }, [products]);  
+  }, []);  
 
 
 
@@ -68,7 +64,7 @@ export default function AdminView(props) {
 
       <>
         {products.length > 0 ? 
-        <ProductTable products = {products}/>
+        <ProductTable products ={ {products}}/>
         :
         <Loader/>
       }

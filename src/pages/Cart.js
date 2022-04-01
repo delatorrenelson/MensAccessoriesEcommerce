@@ -12,6 +12,8 @@ import { Link, useHistory } from "react-router-dom";
 
 import Swal from "sweetalert2";
 
+import "./Cart.scss"
+
 export default function Cart() {
   const { user, setUser } = useContext(UserContext);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -23,13 +25,14 @@ export default function Cart() {
   const token = localStorage.getItem("token");
 
   const history = useHistory();
+  
 
   const setItemQuantity = (id, qty) => {
     if (qty !== 0 && qty !== "NaN") {
       userCart.map((item) => {
         if (item._id === id) {
           item.quantity = qty;
-          item.subTotal = item.unitPrice * qty;
+          item.subTotal = item.price * qty;
         }
       });
     }
@@ -54,28 +57,26 @@ export default function Cart() {
     localStorage.setItem("cart", JSON.stringify(filteredCart));
   };
 
-  const checkOut = () => {
-    const products = userCart.map(cartItem => {return {productId: cartItem._id, quantity: cartItem.quantity}})
-    console.log(products)
+  const checkOut = () => {       
     fetch(`${process.env.REACT_APP_API_URL}/order/checkout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({products: products}),
+      body: JSON.stringify({products: userCart, totalPrice: totalPrice, totalQuantity: totalQuantity}),
     })
     .then((res) => res.json())
     .then((data) =>{
       if(data){
         Swal.fire({
-          title: "Check Out successful",
+          title: "Successfully placed order",
           icon: "success",
           text: "Check Out",
         });
-        history.push("/cart"); // redirect to login page
-        setUserCart([]);
+        history.push("/cart"); // redirect to login page        
         localStorage.setItem("cart", JSON.stringify([]));
+        setUserCart([]);
       }else{
         Swal.fire({
           title: "Fialed to place order",
@@ -88,9 +89,9 @@ export default function Cart() {
 
   const cart = userCart.map((cartItem) => (
     <div key={cartItem._id}>
-      <InputGroup className="my-5">
+      <InputGroup className="my-5 cart">
         {cartItem.productName} {cartItem.color}
-        {" - "} {formatNumber(cartItem.unitPrice)} x
+        {" - "} {formatNumber(cartItem.price)} x
         <FormControl
           min="0"
           value={cartItem.quantity}
@@ -136,8 +137,8 @@ export default function Cart() {
       }
       return (
         <Container>
-          <Alert variant="secondary" className="text-center">
-            <Alert.Heading>Cart is Empty</Alert.Heading>
+          <Alert variant="warning" className="text-center">
+            <Alert.Heading>Your Cart is Empty</Alert.Heading>
             <hr />
             <p>
               Go to <Link to={"/products"}>Product</Link> page and place an item
@@ -149,7 +150,7 @@ export default function Cart() {
     } else {
       return (
         <Container>
-          <Alert variant="secondary" className="text-center">
+          <Alert variant="warning" className="text-center">
             <Alert.Heading>Cart is Empty</Alert.Heading>
             <p>Please login to make an order.</p>
             <hr />

@@ -13,14 +13,17 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Footer from "./components/Footer";
 import Page404 from "./pages/Page404";
+import EditProduct from "./pages/EditProduct";
+import AddProduct from "./pages/AddProduct";
 
 function App() {
-  const [user, setUser] = useState({ id: null, isAdmin: null });
+  const [user, setUser] = useState({firstName: "", id: null, isAdmin: null });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const [isMounted, setIsMounted] = useState(true);
   const unsetUser = () => {
     localStorage.clear();
     setUser({
+      firstName: "",
       id: null,
       isAdmin: null,
     });
@@ -36,18 +39,57 @@ function App() {
       .then((data) => {
         if (typeof data._id !== "undefined") {
           setUser({
+            firstName: data.firstName,
             id: data._id,
             isAdmin: data.isAdmin,
           });
           setIsAuthenticated(true);
         } else {
           setUser({
+            firstName: "",
             id: null,
             isAdmin: null,
           });
         }
       });
+    if (isMounted) {}
+
+    return () => {
+      setIsMounted(false);
+    };
   });
+
+  const authtdUserRoute = () => {
+    if (isAuthenticated) {
+      
+      if (user.isAdmin) {
+        return [
+          <Route key={""} exact path="/dashboard" component={Dashboard} />,
+          <Route
+            key={""}
+            exact
+            path="/products/:productId"
+            component={EditProduct}
+          />,
+          <Route key={""} exact path="/addProduct" component={AddProduct} />,
+          <Route exact path="/orders" component={Orders} />
+        ];
+      } else {
+        return [
+          <Route key={""} exact path="/cart" component={Cart} />,
+          <Route
+            key={""}
+            exact
+            path="/products/:productId"
+            component={ProductDetails}
+          />,
+          <Route exact path="/orders" component={Orders} />
+        ];
+      }
+    }
+
+    return <Route key={""} component={Page404} />;
+  };
 
   return (
     <UserProvider value={{ user, setUser, unsetUser }}>
@@ -56,21 +98,24 @@ function App() {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/home" component={Home} />
-          <Route exact path="/products/:productId" component={ProductDetails} />
+
           <Route exact path="/products" component={Products} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
+          
 
-          {isAuthenticated && !user.isAdmin ? ( // Registered only user routes
-            <Route exact path="/cart" component={Cart} />
-          ) : null}
+          {authtdUserRoute()}
 
-          {isAuthenticated && user.isAdmin ? ( // Admin Only routes
-            <>
+          {/* {isAuthenticated ? (
+            user.isAdmin ? (
               <Route exact path="/dashboard" component={Dashboard} />
-              <Route exact path="/orders" component={Orders} />
-            </>
-          ) : null}
+            ) : (
+              <Route exact path="/cart" component={Cart} />
+            )
+          ) : (
+            <Route component={Page404} />
+          )} */}
+
           <Route component={Page404} />
         </Switch>
         <Footer />

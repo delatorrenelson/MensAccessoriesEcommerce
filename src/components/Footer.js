@@ -1,27 +1,29 @@
-import { Container } from "react-bootstrap";
+import { Container, Nav } from "react-bootstrap";
+import { Link, useHistory } from "react-router-dom";
 
 export default function Footer() {
   return (
     <Container className={"sticky-bottom"}>
       <footer className={"py-3 my-4"}>
-        <ul className={"nav justify-content-center border-bottom pb-3 mb-3"}>
-          <li className={"nav-item"}>
-            <a className={"nav-link px-2 text-muted"}>Home</a>
-          </li>
-          <li className={"nav-item"}>
-            <a className={"nav-link px-2 text-muted"}>Features</a>
-          </li>
-          <li className={"nav-item"}>
-            <a className={"nav-link px-2 text-muted"}>Pricing</a>
-          </li>
-          <li className={"nav-item"}>
-            <a className={"nav-link px-2 text-muted"}>FAQs</a>
-          </li>
-          <li className={"nav-item"}>
-            <a className={"nav-link px-2 text-muted"}>About</a>
-          </li>
-        </ul>
-        <p className={"text-center text-muted"}>© 2022 Company, Inc</p>
+        <Nav className={"nav  border-bottom pb-3 mb-3 justify-content-center"}>
+          <Nav.Item>
+            <Link className="nav-link px-2 text-muted" to={{ pathname: `/` }}>
+              Home
+            </Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Link className="nav-link text-muted" to="/products">
+              Products
+            </Link>
+          </Nav.Item>
+        </Nav>
+        <p className={"text-center text-muted"}>
+          © 2022{" "}
+          <Link to="/" className={"text-center text-muted"}>
+            Ecommerce
+          </Link>
+          , Inc
+        </p>
       </footer>
     </Container>
   );

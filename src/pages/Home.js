@@ -9,13 +9,14 @@ import Loader from "../components/Loader";
 export default function Home() {
   const { user } = useContext(UserContext);
   const [products, setProducts] = useState([]);
-
+const [isMounted, setIsMounted] = useState(true)
   const fetchData = () => {
     fetch(`${process.env.REACT_APP_API_URL}/products`)
       .then((res) => res.json())
       .then((data) => {
         if (data) {
-          setProducts(data.filter((product) => product.isActive === true));
+          let activeProduct = data.filter((product) => product.isActive === true)
+          setProducts(activeProduct);
         }
       });
   };
@@ -25,9 +26,13 @@ export default function Home() {
     .filter((e, i) => i < 4);
 
   useEffect(() => {
-    fetchData();
-    console.log(user);
-  }, []);
+    if(isMounted){
+      fetchData();
+    }
+    return () => {
+      setIsMounted(false)
+    };
+  }, [products]);
 
   return (
     <Container className={"my-3"}>
