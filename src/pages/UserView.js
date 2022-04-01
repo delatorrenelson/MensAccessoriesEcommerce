@@ -24,34 +24,20 @@ export default function UserView(props){
       });        
       };
     
-      const searchProduct = (e) => {        
-        if (e !== "" || e !== null) {
-          setKeyWord(e.toLowerCase());
-    
-          setProducts(
-            products.filter((product) => {
-              product.productName &&
-                product.productName.toLowerCase().includes(keyword);
-            })
-          );
+      const searchProduct = (e) => {
+        console.log(e)
+        if(e !== ""){
+          fetch(`${process.env.REACT_APP_API_URL}/products/q/${e}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data) {
+              setProducts(data);        
+            }
+          });
+        }else{
+          fetchData()
         }
-      };      
-
-      const getProducts = (e) => {
-        setKeyWord(e.target.value);
-        
-        // let path =
-        //   keyword === ""
-        //     ? `${process.env.REACT_APP_API_URL}/products`
-        //     : `${process.env.REACT_APP_API_URL}/products/q/${keyword}`;
-    
-        // if (e.key === "Enter") {
-        //   fetch(path)
-        //     .then((res) => res.json())
-        //     .then((data) => (data ? setProducts(data) : null));
-        // }
-      };
-    
+      };        
 
       useEffect(() => {
         
@@ -64,7 +50,7 @@ export default function UserView(props){
         }
 
         
-      }, []);
+      }, [products]);
     
       const productList = products.map((product) => (
         <ProductCard key={product._id} product={product} />

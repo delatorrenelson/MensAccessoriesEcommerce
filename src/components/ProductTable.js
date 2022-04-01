@@ -56,7 +56,6 @@ export default function ProductTable({ props }) {
       .then((res) => res.json())
       .then((data) => {
         if (data) {
-          console.log(data)
           setProducts(data);        
         }
       });
