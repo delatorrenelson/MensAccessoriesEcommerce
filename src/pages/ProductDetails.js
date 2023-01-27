@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useHistory, Link, useParams } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
 import {
   Col,
   Container,
@@ -8,6 +9,7 @@ import {
   FormControl,
   Alert,
   Toast,
+  Image,
 } from "react-bootstrap";
 import { formatNumber } from "../utils/NumberUtils";
 
@@ -16,21 +18,24 @@ import { faCartPlus } from "@fortawesome/free-solid-svg-icons";
 
 import "./ProductDetails.scss";
 
-import { Link } from "react-router-dom";
+import EditProduct from "../pages/EditProduct";
+
 import { useContext } from "react";
 import UserContext from "../UserContext";
 
 export default function ProductDetails(props) {
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [show, setShow] = useState(false);
-  const { productName, description, price } = props.location.state;
-  const [stock, setStock] = useState(props.location.state.stock);
+  const product = props.location.state;
+  const { productName, description, price, _id } = product;
+
+  const [stock, setStock] = useState(product.stock);
   const [subTotal, setSubTotal] = useState(0);
   const [quantity, setQuantity] = useState(0);
-  const [imageURL, setImageURL] = useState(props.location.state.imageURL);
-  const [userCart, setUserCart] = useState(
-    JSON.parse(localStorage.getItem("cart")) || 0
-  );
+  const [imageURL, setImageURL] = useState(product.imageURL);
+  const [userCart, setUserCart] = useState(user.cart);
+
+  const history = useHistory();
 
   const toast = () => {
     return (
@@ -46,7 +51,7 @@ export default function ProductDetails(props) {
     );
   };
 
-  const addToCart = () => {
+  const addToCart = useCallback(() => {
     const {
       productName,
       _id,
@@ -71,29 +76,34 @@ export default function ProductDetails(props) {
       imageURL: imageURL,
     };
 
-    let cart = userCart;
-    cart.push(currentItem);
-    cart = cart.filter(
-      (v, i, a) => a.findLastIndex((v2) => v2._id === v._id) === i
-    );
-    setUserCart(cart.reverse());
+    let cart_ = userCart;
+    cart_.push(currentItem);
+    cart_ = cart_
+      .filter((v, i, a) => a.findLastIndex((v2) => v2._id === v._id) === i)
+      .reverse();
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart_));
 
+    setUserCart(JSON.parse(localStorage.getItem("cart")) || 0);
+
+    setUser({ ...user, cart: JSON.parse(localStorage.getItem("cart")) });
     setShow(true);
     setQuantity(0);
-  };
+  }, [userCart, props.location.state, quantity, subTotal, setUser, user]);
 
-  const setCartItems = (qty) => {
-    if (qty !== "" || qty !== null || qty !== "NaN") {
-      if (qty > stock) {
-        setQuantity(stock);
-      } else {
-        setQuantity(qty);
+  const setCartItems = useCallback(
+    (qty) => {
+      if (qty !== "" || qty !== null || qty !== "NaN") {
+        if (qty > stock) {
+          setQuantity(stock);
+        } else {
+          setQuantity(qty);
+        }
+        setSubTotal(quantity * price);
       }
-      setSubTotal(quantity * price);
-    }
-  };
+    },
+    [price, quantity, stock]
+  );
 
   const zeroStock = () => {
     return (
@@ -140,22 +150,26 @@ export default function ProductDetails(props) {
 
   useEffect(() => {
     setCartItems(quantity);
-  }, [quantity]);
+  }, [quantity, setCartItems, userCart]);
 
-  return (
-    <Container className={"my-3"}>
+  return user.isAdmin ? (
+    <EditProduct />
+  ) : (
+    <Container className={"my-3 card p-3"}>
       <Row>
-        <Col>
-        {imageURL !== "" ? (
-            <img alt={`${productName}`} src={imageURL} />
+        <Col md={6}>
+          {imageURL !== "" ? (
+            <Image alt={`${productName}`} src={imageURL} rounded fluid />
           ) : (
-            <img
+            <Image
               alt={`${productName}`}
+              rounded
               src={`https://via.placeholder.com/300?text=${productName}`}
+              fluid
             />
           )}
         </Col>
-        <Col>
+        <Col md={6}>
           <h3>{productName}</h3>
           <p>{description}</p>
           <p>{formatNumber(price)}</p>

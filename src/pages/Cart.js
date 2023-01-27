@@ -19,7 +19,7 @@ export default function Cart() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [userCart, setUserCart] = useState(
-    JSON.parse(localStorage.getItem("cart"))
+    user.cart
   );
 
   const token = localStorage.getItem("token");
@@ -52,9 +52,10 @@ export default function Cart() {
   };
 
   const removeItem = (id) => {
-    const filteredCart = userCart.filter((item) => item._id !== id);
+    const filteredCart = userCart.filter((item) => item._id !== id);            
     setUserCart(filteredCart);
-    localStorage.setItem("cart", JSON.stringify(filteredCart));
+    setUser({...user, cart: filteredCart})
+    localStorage.setItem("cart", JSON.stringify(filteredCart));    
   };
 
   const checkOut = () => {       
@@ -76,7 +77,8 @@ export default function Cart() {
         });
         history.push("/cart"); // redirect to login page        
         localStorage.setItem("cart", JSON.stringify([]));
-        setUserCart([]);
+        setUserCart([])
+        setUser({...user, cart: []})
       }else{
         Swal.fire({
           title: "Fialed to place order",

@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAEA,AAAA,EAAE,AAAA,MAAM,AAAA,CACJ,MAAM,CAAE,kBAAkB,CAC7B,AAED,AAAA,kBAAkB,AAAA,CACd,SAAS,CAAE,gBAAgB,CAC3B,UAAU,CAAE,gBAAgB,CAC5B,SAAS,CAAE,gBAAgB,CAC3B,UAAU,CAAE,gBAAgB,CAC/B,AAGD,AAAA,MAAM,AAAA,SAAS,AAAC,CACZ,UAAU,CAAE,MAAM,CAClB,cAAc,CAAE,qBAAqB,CACrC,KAAK,CAAE,eAAe,CACzB,AAED,AAAA,EAAE,AAAA,CACE,cAAc,CAAE,iBAAiB,CACjC,YAAY,CAAE,sBAAsB,CACvC",
+    "sources": [
+        "../src/components/ProductTable.scss"
+    ],
+    "names": [],
+    "file": "ProductTable.min.css"
+}

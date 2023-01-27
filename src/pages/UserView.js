@@ -1,6 +1,4 @@
-import { useState, useEffect, useContext } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { Container, Row, Col, InputGroup, FormControl } from "react-bootstrap";
 import ProductCard from "../components/ProductCard";
@@ -10,46 +8,41 @@ import "./UserView.scss";
 
 export default function UserView(props) {
   const [products, setProducts] = useState([]);
-  const [keyword, setKeyWord] = useState("");
   const [isMounted, setIsMounted] = useState(true);
 
-  const fetchData = () => {
-    fetch(`${process.env.REACT_APP_API_URL}/products`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data) {
-          let activeProduct = data.filter(
-            (product) => product.isActive === true
-          );
-          setProducts(activeProduct);
-        }
-      });
-  };
 
-  const searchProduct = (e) => {
-    console.log(e);
+  const searchProduct = (e) => {    
     if (e !== "") {
       fetch(`${process.env.REACT_APP_API_URL}/products/q/${e}`)
         .then((res) => res.json())
         .then((data) => {
+          console.log(data)
           if (data) {
-            setProducts(data);
+            setProducts(data.filter(
+              (product) => product.isActive
+            ));
           }
         });
-    } else {
-      fetchData();
-    }
+    } 
   };
 
   useEffect(() => {
     if (isMounted) {
-      fetchData();
+      fetch(`${process.env.REACT_APP_API_URL}/products`)
+      .then((res) => res.json())
+      .then((data) => {        
+        if (data) {
+          setProducts(data.filter(
+            (product) => product.isActive
+          ));
+        }
+      });
     }
 
     return () => {
       setIsMounted(false);
     };
-  }, [products]);
+  }, [isMounted,products]);
 
   const productList = products.map((product) => (
     <ProductCard key={product._id} product={product} />
@@ -64,7 +57,7 @@ export default function UserView(props) {
               <FaSearch />
             </InputGroup.Text>
             <FormControl
-              onChange={(e) => searchProduct(e)}
+              onChange={(e) => searchProduct(e.target.value)}
               type="text"
               placeholder="Search..."
               aria-label="Search..."

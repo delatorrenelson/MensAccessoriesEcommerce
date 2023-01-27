@@ -40,8 +40,8 @@ const [isMounted, setIsMounted] = useState(true)
         <Dasboard />
       ) : (
         <>
-          <h1>Home</h1>
-          <h2>Our Hot Items</h2>
+          <h1 className="text-center">Welcome to Men's Accessories Shop</h1>
+          <h2 className="text-center">Our Hot Items</h2>
           <Row> {hotItems.length === 0 ? <Loader /> : hotItems}</Row>
         </>
       )}

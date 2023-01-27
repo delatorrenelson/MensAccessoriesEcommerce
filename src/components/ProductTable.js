@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useHistory, Link } from "react-router-dom";
 import {
   Button,
   Table,
@@ -8,7 +8,6 @@ import {
   Col,
   FormControl,
   Row,
-  Modal,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -20,63 +19,47 @@ import { FaSearch } from "react-icons/fa";
 
 import "./ProductTable.scss";
 
-import EditProduct from "../pages/EditProduct";
-import { Link } from "react-router-dom";
-
 export default function ProductTable({ props }) {
-  const [tableRows, setTableRows] = useState([]);
   const [products, setProducts] = useState([]);
-  const [keyword, setKeyWord] = useState("");
-  const [currentProduct, setCurrentProduct] = useState();
-
-  const [productId, setProductId] = useState("");
-  const [price, setPrice] = useState(0);
-  const [productName, setProductName] = useState("");
-  const [stock, setStock] = useState(0);
-  const [isActive, setIsActive] = useState(false);
-
-  const [modalShow, setModalShow] = useState(false);
   const [isMounted, setIsMounted] = useState(true);
-  const token = localStorage.getItem("token");
 
-  const fetchData = () => {
-    fetch(`${process.env.REACT_APP_API_URL}/products`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data) {
-          setProducts(data);
-        }
-      });
-  };
+  const history = useHistory();
 
-  const searchProduct = (e) => {
-    console.log(e)
-    if(e !== ""){
+  const searchProduct = useCallback((e) => {
+    if (e !== "") {
       fetch(`${process.env.REACT_APP_API_URL}/products/q/${e}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data) {
-          setProducts(data);        
-        }
-      });
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            setProducts(data);
+          }
+        });
     }else{
-      fetchData()
+      fetch(`${process.env.REACT_APP_API_URL}/products`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            setProducts(data);
+          }
+        });      
     }
-  };
+  });
 
   useEffect(() => {
     if (isMounted) {
-      fetchData();
+      fetch(`${process.env.REACT_APP_API_URL}/products`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            setProducts(data);
+          }
+        });
     }
 
     return () => {
       setIsMounted(false);
     };
-  }, [products]);
-
-  const history = useHistory();
-
-  const [isEdit, setIsEdit] = useState(true);
+  }, [isMounted, products]);
 
   const handleRowClick = (product) => {
     history.push({ pathname: `/products/${product._id}`, state: product });
@@ -86,37 +69,8 @@ export default function ProductTable({ props }) {
     history.push({ pathname: `/addProduct` });
   };
 
-  const rows = products.map((product, i) => {
-    return (
-      <tr
-        key={product._id}
-        className={product.isActive ? "" : "table-danger"}
-        onClick={() => handleRowClick(product)}
-      >
-        <td>
-          {i + 1}
-          {". "}
-        </td>
-        <td>{product.productName}</td>
-        <td className="">{product.description}</td>
-        <td className="">{product.color}</td>
-        <td className="">{product.category}</td>
-        <td className="text-center">{formatNumber(product.price)}</td>
-        <td className="text-center">{product.stock}</td>
-
-        <td className="text-end">
-          <img
-            className="img-thumbnail product-thumbnail"
-            src={product.imageURL}
-            alt={product.productName}
-          />
-        </td>
-      </tr>
-    );
-  });
-
   return (
-    <Container>
+    <Container md={6} className="card p-4">
       <h1 className="text-center">Products</h1>
       <Row>
         <Col>
@@ -146,34 +100,66 @@ export default function ProductTable({ props }) {
           </div>
         </Col>
       </Row>
-
       {products.length > 0 ? (
         <Table size="sm" className="mt-4" hover>
           <thead>
-            <tr>
-              <td className="fw-bold text-muted text-capitalize text-start">
+            <tr className="align-middle">
+              <td className="fw-bold text-muted text-capitalize text-start align-middle">
                 #
               </td>
-              <td className="fw-bold text-muted text-capitalize text-start">
+              <td className="fw-bold text-muted text-capitalize text-start align-middle">
                 Product Name
               </td>
-              <td className="fw-bold text-muted text-capitalize">
+              <td className="fw-bold text-muted text-capitalize align-middle">
                 Description
               </td>
-              <td className="fw-bold text-muted text-capitalize">Color</td>
-              <td className="fw-bold text-muted text-capitalize">Category</td>
-              <td className="fw-bold text-muted text-capitalize text-center">
+              <td className="fw-bold text-muted text-capitalize align-middle">
+                Color
+              </td>
+              <td className="fw-bold text-muted text-capitalize align-middle">
+                Category
+              </td>
+              <td className="fw-bold text-muted text-capitalize align-middle text-center">
                 Price
               </td>
-              <td className="fw-bold text-muted text-capitalize text-center">
+              <td className="fw-bold text-muted text-capitalize align-middle text-center">
                 Stocks
               </td>
-              <td className="fw-bold text-muted text-capitalize text-center">
+              <td className="fw-bold text-muted text-capitalize align-middle text-center">
                 Image
               </td>
             </tr>
           </thead>
-          <tbody>{rows}</tbody>
+          <tbody>
+            {products.map((product, i) => {
+              return (
+                <tr
+                  key={product._id}
+                  className={product.isActive ? "" : "table-danger"}
+                  onClick={() => handleRowClick(product)}
+                >
+                  <td>
+                    {i + 1}
+                    {". "}
+                  </td>
+                  <td>{product.productName}</td>
+                  <td className="">{product.description}</td>
+                  <td className="">{product.color}</td>
+                  <td className="">{product.category}</td>
+                  <td className="text-center">{formatNumber(product.price)}</td>
+                  <td className="text-center">{product.stock}</td>
+
+                  <td className="text-end">
+                    <img
+                      className="img-thumbnail product-thumbnail"
+                      src={product.imageURL}
+                      alt={product.productName}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
         </Table>
       ) : (
         <Loader />

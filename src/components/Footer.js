@@ -1,11 +1,10 @@
-import { Container, Nav } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import { Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <Container className={"sticky-bottom"}>
       <footer className={"py-3 my-4"}>
-        <Nav className={"nav  border-bottom pb-3 mb-3 justify-content-center"}>
+        <Nav className={"nav  border-top pb-3 mb-3 justify-content-center"}>
           <Nav.Item>
             <Link className="nav-link px-2 text-muted" to={{ pathname: `/` }}>
               Home
@@ -25,6 +24,5 @@ export default function Footer() {
           , Inc
         </p>
       </footer>
-    </Container>
   );
 }

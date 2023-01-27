@@ -1,17 +1,10 @@
 import { Link } from "react-router-dom";
-import { Card, Col, Button, Text } from "react-bootstrap";
-import styled, { ThemeProvider } from "styled-components";
+import { Card, Col } from "react-bootstrap";
 import { formatNumber } from "../utils/NumberUtils";
-import UserContext from "../UserContext";
-import { useState, useEffect, useContext } from "react";
 
 import "./ProductCard.scss";
 
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
-
 export default function ProductCard({ product }) {
-  const { user } = useContext(UserContext);
 
   const { _id, productName, description, price, rating, color, imageURL } =
     product;

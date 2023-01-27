@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Container, Form, Button, Radio, Nav } from "react-bootstrap";
+import { useState, useEffect, useCallback } from "react";
+import { Container, Form, Button, Col, Row } from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -52,7 +52,6 @@ export default function AddProduct() {
             title: "Succesfully Udpate Product",
             icon: "success",
           });
-          console.log(imageURL);
           // history.push("/products")
         } else {
           Swal.fire({
@@ -64,17 +63,21 @@ export default function AddProduct() {
       });
   };
 
-  
-  const createNewCategory = () => {    
+  const createNewCategory = () => {
     Swal.fire({
       title: "Create New Category",
       input: "text",
       showCancelButton: true,
     }).then((input) => {
       if (input.value !== "" || input.value !== "undefined") {
-        if(!categories.map(e=>e.category).includes(input.value.toLocaleLowerCase())){
+        if (
+          !categories
+            .map((e) => e.category)
+            .includes(input.value.toLocaleLowerCase())
+        ) {
+          setCategories(input.value)
           setNewCategory(input.value);
-          console.log(categories.includes(input.value));
+          // console.log(categories.includes(input.value));
           fetch(`${process.env.REACT_APP_API_URL}/categories`, {
             method: "POST",
             headers: {
@@ -85,14 +88,14 @@ export default function AddProduct() {
           })
             .then((res) => res.json())
             .then((data) => {
-              console.log(data)
+              if(data) {setCategories(data)}
             });
         }
       }
     });
   };
 
-  const getCategory = () => {
+  const getCategories = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_URL}/categories`, {
       headers: {
         "Content-Type": "application/json",
@@ -102,147 +105,157 @@ export default function AddProduct() {
       .then((res) => res.json())
       .then((data) => {
         if (data) {
-          setCategories(data)
+          setCategories(data);
         }
       });
-  };
+  },[]);
 
-  useEffect(() => {
-    getCategory();
-    if (isMounted) {}
+  useEffect(() => {    
+    if (isMounted) {
+      getCategories();
+    }
     return () => {
       setIsMounted(false);
     };
-  }, [categories, isMounted]);
+  }, [categories, isMounted, getCategories]);
 
   return (
     <Container>
-      <h1 className="text-center">Add New Product</h1>
-      <Form onSubmit={(editedProduct) => addProduct(editedProduct)}>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Product Name</Form.Label>
-          <Form.Control
-            value={productName}
-            type="text"
-            placeholder="Product Name"
-            required
-            onChange={(ev) => setProductName(ev.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            value={description}
-            type="text"
-            placeholder="Description"
-            required
-            onChange={(ev) => setDescription(ev.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Color</Form.Label>
-          <Form.Control
-            value={color}
-            type="text"
-            placeholder="Color"
-            required
-            onChange={(ev) => setColor(ev.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label className="d-flex-row">
-            Category /{""}
-            <Button variant="link" onClick={(ev) => createNewCategory()} className="text-decoration-none">
-              Add New Category
-            </Button>
-          </Form.Label>
-          <Form.Select
-            as="select"
-            required
-            defaultValue={category}
-            onChange={(ev) => selectCategory(ev)}
-          > 
-          <option></option>           
-            {categories.map((curCategory) =>
-              category === curCategory.category ? (
-                <option value={curCategory.category} selected>
-                  {curCategory.category}
-                </option>
-              ) : (
-                <option value={curCategory.category}>{curCategory.category} </option>
-              )
-            )}
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Image URL</Form.Label>
-          <Form.Control
-            value={imageURL}
-            type="url"
-            placeholder="image url..."
-            onChange={(ev) => setImageURL(ev.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Price</Form.Label>
-          <Form.Control
-            value={price}
-            required
-            type="number"
-            placeholder="Price"
-            onChange={(ev) => setPrice(ev.target.value)}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Stock</Form.Label>
-          <Form.Control
-            value={stock}
-            type="number"
-            placeholder="Stock"
-            onChange={(ev) => setStock(ev.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="d-flex d-flex-row align-self-start justify-content-start">
-          {isActive ? (
-            <>
-              <Form.Switch
-                onChange={(e) => {
-                  setIsActive(!isActive);
-                }}
-                checked
-                type="switch"
+      <Row className="d-flex justify-content-center">
+        <Col md={6} className="card p-4">
+          <Form onSubmit={(editedProduct) => addProduct(editedProduct)}>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Product Name</Form.Label>
+              <Form.Control
+                value={productName}
+                type="text"
+                placeholder="Product Name"
+                required
+                onChange={(ev) => setProductName(ev.target.value)}
               />
-              <Form.Label className="mx-3">Set as Available</Form.Label>
-            </>
-          ) : (
-            <>
-              <Form.Switch
-                onChange={(e) => {
-                  setIsActive(!isActive);
-                }}
-                type="switch"
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                value={description}
+                type="text"
+                placeholder="Description"
+                required
+                onChange={(ev) => setDescription(ev.target.value)}
               />
-              <Form.Label className="mx-3 text-danger">
-                Set as Not Available
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Color</Form.Label>
+              <Form.Control
+                value={color}
+                type="text"
+                placeholder="Color"
+                required
+                onChange={(ev) => setColor(ev.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label className="d-flex-row">
+                Category /{""}
+                <Button
+                  variant="link"
+                  onClick={(ev) => createNewCategory()}
+                  className="text-decoration-none"
+                >
+                  Add New Category
+                </Button>
               </Form.Label>
-            </>
-          )}
-        </Form.Group>
-        <Form.Group className="d-flex d-flex-row align-self-end justify-content-end">
-          <Link to={"/products"} className="btn btn-danger btn-sm mx-3">
-            Cancel
-          </Link>
-          <Button variant="primary" type="submit" size="sm" className="">
-            Submit
-          </Button>
-        </Form.Group>
-      </Form>
+              <Form.Select
+                as="select"
+                required
+                defaultValue={category}
+                onChange={(ev) => selectCategory(ev)}
+              >
+                <option></option>
+                {categories.map((curCategory) =>
+                  category === curCategory.category ? (
+                    <option value={curCategory.category} selected>
+                      {curCategory.category}
+                    </option>
+                  ) : (
+                    <option value={curCategory.category}>
+                      {curCategory.category}{" "}
+                    </option>
+                  )
+                )}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Image URL</Form.Label>
+              <Form.Control
+                value={imageURL}
+                type="url"
+                placeholder="image url..."
+                onChange={(ev) => setImageURL(ev.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Price</Form.Label>
+              <Form.Control
+                value={price}
+                required
+                type="number"
+                placeholder="Price"
+                onChange={(ev) => setPrice(ev.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Stock</Form.Label>
+              <Form.Control
+                value={stock}
+                type="number"
+                placeholder="Stock"
+                onChange={(ev) => setStock(ev.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group className="d-flex d-flex-row align-self-start justify-content-start">
+              {isActive ? (
+                <>
+                  <Form.Switch
+                    onChange={(e) => {
+                      setIsActive(!isActive);
+                    }}
+                    checked
+                    type="switch"
+                  />
+                  <Form.Label className="mx-3">Set as Available</Form.Label>
+                </>
+              ) : (
+                <>
+                  <Form.Switch
+                    onChange={(e) => {
+                      setIsActive(!isActive);
+                    }}
+                    type="switch"
+                  />
+                  <Form.Label className="mx-3 text-danger">
+                    Set as Not Available
+                  </Form.Label>
+                </>
+              )}
+            </Form.Group>
+            <Form.Group className="d-flex d-flex-row align-self-end justify-content-end">
+              <Link to={"/products"} className="btn btn-danger btn-sm mx-3">
+                Cancel
+              </Link>
+              <Button variant="primary" type="submit" size="sm" className="">
+                Add Product
+              </Button>
+            </Form.Group>
+          </Form>
+        </Col>
+      </Row>
     </Container>
   );
 }

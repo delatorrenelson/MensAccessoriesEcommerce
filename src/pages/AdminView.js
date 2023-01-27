@@ -1,128 +1,169 @@
-import { useState, useEffect, useContext } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FaSearch } from "react-icons/fa";
+import { useState, useEffect, useCallback } from "react";
+import { useHistory, Link } from "react-router-dom";
 import {
   Button,
-  Col,
-  Container,
-  FormControl,
-  InputGroup,
-  Row,
-  Modal,
-  Form,
   Table,
+  Container,
+  InputGroup,
+  Col,
+  FormControl,
+  Row,
 } from "react-bootstrap";
-import ProductCard from "../components/ProductCard";
-import ProductTable from "../components/ProductTable";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Loader from "../components/Loader"
+import Loader from "../components/Loader";
+import { formatNumber } from "../utils/NumberUtils";
 
-export default function AdminView(props) {
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FaSearch } from "react-icons/fa";
+
+import "../components/ProductTable.scss";
+
+export default function AdminView({ props }) {
   const [products, setProducts] = useState([]);
-  const [productFormShow, setProductFormShow] = useState(false);
-  const [keyword, setKeyWord] = useState("");
+  const [isMounted, setIsMounted] = useState(true);
 
-  const fetchData = () => {
-    fetch(`${process.env.REACT_APP_API_URL}/products`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data) {
-          setProducts(data);
-        }
-      });
-  };
+  const history = useHistory();
 
-  const getProducts = (e) => {
-    setKeyWord(e.target.value);
-    let path =
-      keyword === ""
-        ? `${process.env.REACT_APP_API_URL}/products`
-        : `${process.env.REACT_APP_API_URL}/products/q/${keyword}`;
-
-    if (e.key === "Enter") {
-      fetch(path)
+  const searchProduct = useCallback((e) => {
+    if (e !== "") {
+      fetch(`${process.env.REACT_APP_API_URL}/products/q/${e}`)
         .then((res) => res.json())
-        .then((data) => (data ? setProducts(data) : null));
+        .then((data) => {
+          if (data) {
+            setProducts(data);
+          }
+        });
+    }else{
+      fetch(`${process.env.REACT_APP_API_URL}/products`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            setProducts(data);
+          }
+        });      
     }
+  },[setProducts]);
+
+  useEffect(() => {
+    if (isMounted) {
+      fetch(`${process.env.REACT_APP_API_URL}/products`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            setProducts(data);
+          }
+        });
+    }
+
+    return () => {
+      setIsMounted(false);
+    };
+  }, [isMounted, products, setProducts]);
+
+  const handleRowClick = (product) => {
+    history.push({ pathname: `/products/${product._id}`, state: product });
   };
 
-  const productList = products.map((product) => (
-    <ProductCard key={product._id} product={product} />
-  ));
-  
-  
-  useEffect(() => {    
-    fetchData();
-  }, []);  
-
-
-
+  const addProduct = () => {
+    history.push({ pathname: `/addProduct` });
+  };
 
   return (
-    <Container className={"my-3"}>
+    <Container md={6} className="card p-4">
+      <h1 className="text-center">Products</h1>
+      <Row>
+        <Col>
+          <InputGroup>
+            <InputGroup.Text id="btnGroupAddon2">
+              <FaSearch />
+            </InputGroup.Text>
+            <FormControl
+              onChange={(e) => searchProduct(e.target.value)}
+              type="text"
+              placeholder="Search..."
+              aria-label="Search..."
+            />
+          </InputGroup>
+        </Col>
+        <Col>
+          <div className={"clearfix"}>
+            <Button
+              size="sm"
+              className={"float-end"}
+              onClick={() => {
+                addProduct();
+              }}
+            >
+              Add Product <FontAwesomeIcon icon={faPlus} />
+            </Button>
+          </div>
+        </Col>
+      </Row>
+      {products.length > 0 ? (
+        <Table size="sm" className="mt-4" hover>
+          <thead>
+            <tr className="align-middle">
+              <td className="fw-bold text-muted text-capitalize text-start align-middle">
+                #
+              </td>
+              <td className="fw-bold text-muted text-capitalize text-start align-middle">
+                Product Name
+              </td>
+              <td className="fw-bold text-muted text-capitalize align-middle">
+                Description
+              </td>
+              <td className="fw-bold text-muted text-capitalize align-middle">
+                Color
+              </td>
+              <td className="fw-bold text-muted text-capitalize align-middle">
+                Category
+              </td>
+              <td className="fw-bold text-muted text-capitalize align-middle text-center">
+                Price
+              </td>
+              <td className="fw-bold text-muted text-capitalize align-middle text-center">
+                Stocks
+              </td>
+              <td className="fw-bold text-muted text-capitalize align-middle text-center">
+                Image
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product, i) => {
+              return (
+                <tr
+                  key={product._id}
+                  className={product.isActive ? "" : "table-danger"}
+                  onClick={()=> handleRowClick(product)}
+                >
+                  <td>
+                    {i + 1}
+                    {". "}
+                  </td>
+                  <td>{product.productName}</td>
+                  <td className="">{product.description}</td>
+                  <td className="">{product.color}</td>
+                  <td className="">{product.category}</td>
+                  <td className="text-center">{formatNumber(product.price)}</td>
+                  <td className="text-center">{product.stock}</td>
 
-      <>
-        {products.length > 0 ? 
-        <ProductTable products ={ {products}}/>
-        :
-        <Loader/>
-      }
-      </>
-
-      <ProductForm
-        show={productFormShow}
-        onHide={() => setProductFormShow(false)}
-      />
+                  <td className="text-end">
+                    <img
+                      className="img-thumbnail product-thumbnail"
+                      src={product.imageURL}
+                      alt={product.productName}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      ) : (
+        <Loader />
+      )}
     </Container>
-  );
-}
-
-function ProductForm(props) {
-  return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      backdrop="static"
-      centered
-    >
-      <Form>
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Add Product
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group className="mb-3" controlId="formBasicEmail">            
-            <Form.Control type="text" placeholder="Product Name" />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicPassword">            
-            <Form.Control type="text" placeholder="Description" />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicPassword">            
-            <Form.Control type="text" placeholder="Category" />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicPassword">            
-            <Form.Control type="number" placeholder="Price" />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button size="sm" variant="danger" onClick={props.onHide}>
-            Cancel
-          </Button>
-          <Button
-            size="sm"
-            variant="primary"
-            type="submit"
-            onClick={props.onHide}
-          >
-            Save
-          </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
   );
 }

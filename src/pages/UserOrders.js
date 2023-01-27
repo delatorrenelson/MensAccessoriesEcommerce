@@ -1,17 +1,12 @@
-import { useState, useEffect, useContext, useReducer } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
 import {
   Container,
-  Card,
   Tab,
+  Alert,
   Tabs,
-  ListGroup,
-  Badge,
-  Button,
 } from "react-bootstrap";
 import UserContext from "../UserContext";
-import { formatNumber, formatDate } from "../utils/NumberUtils";
-import OrderCard from "../components/OrderCard"
+import OrderCard from "../components/OrderCard";
 
 export default function UserOrders() {
   const { user } = useContext(UserContext);
@@ -19,31 +14,27 @@ export default function UserOrders() {
   const [isMounted, setIsMounted] = useState(true);
   const token = localStorage.getItem("token");
 
-  const fetchData = () => {
-    fetch(`${process.env.REACT_APP_API_URL}/order/myorder`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((order) => {
-        if (order) {
-          setOrders(order);
-        }
-      });
-  };
-
   useEffect(() => {
-    fetchData();
     if (isMounted) {
-      
+      fetch(`${process.env.REACT_APP_API_URL}/order/myorder`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((order) => {
+          if (order) {
+            setOrders(order);
+          }
+        });      
     }
 
     return () => {
       setIsMounted(false);
     };
-  }, [orders]);
+  }, [orders, isMounted, token]);
+
 
   const cancelledOrders = orders
     .filter((order) => order.status === "cancelled")
@@ -64,31 +55,62 @@ export default function UserOrders() {
       <Tabs
         defaultActiveKey="toShip"
         id="uncontrolled-tab-example"
-        className="mb-5 justify-content-around nav nav-pills flex-column flex-sm-row"
+        className="mb-5 justify-content-around nav nav-pills flex-column flex-sm-row border-bottom-0"
       >
         <Tab eventKey="toShip" title="To Ship" className="flex-sm-fill">
-          {toShipOrders.map((order) => {
-            return <OrderCard order={order} key={order._id} />;
-          })}
+          {toShipOrders.length > 0 ? (
+            toShipOrders.map((order) => {
+              return <OrderCard order={order} key={order._id} />;
+            })
+          ) : (
+            <Alert variant="warning">
+              <Alert.Heading className="text-center">
+                No Order List
+              </Alert.Heading>
+            </Alert>
+          )}
         </Tab>
 
         <Tab eventKey="toRecieve" title="To Receive" className="flex-sm-fill">
-          {toRecieveOrders.map((order) => {
-            return <OrderCard order={order} key={order._id} />;
-          })}
+          {toRecieveOrders.length > 0 ? (
+            toRecieveOrders.map((order) => {
+              return <OrderCard order={order} key={order._id} />;
+            })
+          ) : (
+            <Alert variant="warning">
+              <Alert.Heading className="text-center">
+                No Order List
+              </Alert.Heading>
+            </Alert>
+          )}
         </Tab>
         <Tab eventKey="completed" title="Completed" className="flex-sm-fill">
-          {completedOrders.map((order) => {
-            return <OrderCard order={order} key={order._id} />;
-          })}
+          {completedOrders.length > 0 ? (
+            completedOrders.map((order) => {
+              return <OrderCard order={order} key={order._id} />;
+            })
+          ) : (
+            <Alert variant="warning">
+              <Alert.Heading className="text-center">
+                No Order List
+              </Alert.Heading>
+            </Alert>
+          )}
         </Tab>
         <Tab eventKey="canelled" title="Cancelled" className="flex-sm-fill">
-          {cancelledOrders.map((order) => {
-            return <OrderCard order={order} key={order._id} />;
-          })}
+          {cancelledOrders.length > 0 ? (
+            cancelledOrders.map((order) => {
+              return <OrderCard order={order} key={order._id} />;
+            })
+          ) : (
+            <Alert variant="warning">
+              <Alert.Heading className="text-center">
+                No Order List
+              </Alert.Heading>
+            </Alert>
+          )}
         </Tab>
       </Tabs>
     </Container>
   );
 }
-

@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,SAAS,CAAG,IAAI,CAAG,MAAM,AAAC,CACtB,KAAK,CAAE,gBAAgB,CAC1B",
+    "sources": [
+        "../src/pages/EditProduct.scss"
+    ],
+    "names": [],
+    "file": "EditProductmin.css"
+}

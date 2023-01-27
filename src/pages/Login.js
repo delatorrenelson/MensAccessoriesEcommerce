@@ -36,8 +36,10 @@ export default function Login() {
             .then((data) => {
               setUser({
                 id: data._id,
-                isAdmin: data.isAdmin,
+                isAdmin: data.isAdmin,                
               });
+
+              user.cart = JSON.parse(localStorage.getItem("cart"))
 
               Swal.fire({
                 title: "Login successful",
@@ -94,6 +96,15 @@ export default function Login() {
               >
                 Login
               </Button>
+              
+            </Form.Group>
+            <Form.Group className="my-4 d-flex justify-content-between">
+            <Link
+                to={{ pathname: `./register` }}
+                className="flex-fill text-center form-text"
+              >
+                Forgot Password
+              </Link>
             </Form.Group>
             <Form.Group className="my-4 d-flex justify-content-between">
               <Link
@@ -101,12 +112,6 @@ export default function Login() {
                 className="flex-fill text-center form-text"
               >
                 Sign Up
-              </Link>
-              <Link
-                to={{ pathname: `./register` }}
-                className="flex-fill text-center form-text"
-              >
-                Forgot Password
               </Link>
             </Form.Group>
           </Form>

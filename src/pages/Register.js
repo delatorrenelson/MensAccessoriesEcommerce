@@ -4,12 +4,12 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import Swal from "sweetalert2";
 
 export default function Register() {
-  const [firstName, setFirstName] = useState("testFirstName");
-  const [lastName, setLastName] = useState("testLastName");
-  const [email, setEmail] = useState("testEmail@mail.com");
-  const [mobileNo, setMobileNo] = useState("12345678909");
-  const [password, setPassword] = useState("testPassword");
-  const [confirmPassword, setConfirmPassword] = useState("testPassword");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isActive, setIsActive] = useState(false);
 
   const history = useHistory();
