@@ -125,7 +125,7 @@ export default function Register() {
   return (
     <Container className={"my-3"}>
       <Row className="d-flex d-flex-row justify-content-center">
-        <Col md={6} lg={6} sm={12}>
+        <Col md={6} lg={6} sm={12} className="card p-4">
           <Form onSubmit={(e) => registerUser(e)}>
             <h1 className={"text-center"}>Sign Up</h1>
             <Form.Group className="mb-3" controlId="firstName">

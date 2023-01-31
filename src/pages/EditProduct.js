@@ -123,7 +123,7 @@ export default function EditProduct(props) {
             body: JSON.stringify({ category: input.value }),
           })
             .then((res) => res.json())
-            .then((data) => {});
+            .then((data) => {getCategories()});
         }
       }
     });

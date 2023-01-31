@@ -34,7 +34,7 @@ export default function OrderCard({ order }) {
     return () => {
       setIsMounted(false);
     };
-  }, [order]);
+  }, [order,isMounted]);
 
   return (
     <Card className={statusClass}>

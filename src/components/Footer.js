@@ -2,6 +2,7 @@ import { Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
+  const year = new Date().getFullYear();
   return (
       <footer className={"py-3 my-4"}>
         <Nav className={"nav  border-top pb-3 mb-3 justify-content-center"}>
@@ -17,7 +18,7 @@ export default function Footer() {
           </Nav.Item>
         </Nav>
         <p className={"text-center text-muted"}>
-          © 2022{" "}
+          © {year+" "}
           <Link to="/" className={"text-center text-muted"}>
             Ecommerce
           </Link>

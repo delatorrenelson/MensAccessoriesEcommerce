@@ -63,7 +63,7 @@ export default function Login() {
     <Container className={"my-3"}>
       <Row>
         <Col md={{ span: 4, offset: 4 }}>
-          <Form onSubmit={(e) => loginUser(e)} className="my-3">
+          <Form onSubmit={(e) => loginUser(e)} className="my-3 card p-4">
             <h1 className={"text-center"}>Login</h1>
             <Form.Group controlId="email" className="my-4">
               <Form.Label>Email</Form.Label>

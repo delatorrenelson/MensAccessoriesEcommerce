@@ -10,39 +10,42 @@ export default function UserView(props) {
   const [products, setProducts] = useState([]);
   const [isMounted, setIsMounted] = useState(true);
 
-
-  const searchProduct = (e) => {    
+  const searchProduct = (e) => {
     if (e !== "") {
       fetch(`${process.env.REACT_APP_API_URL}/products/q/${e}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data)
+          console.log(data);
           if (data) {
-            setProducts(data.filter(
-              (product) => product.isActive
-            ));
+            setProducts(data.filter((product) => product.isActive));
           }
         });
-    } 
+    } else {
+      fetch(`${process.env.REACT_APP_API_URL}/products`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            setProducts(data.filter((product) => product.isActive));
+          }
+        });
+    }
   };
 
   useEffect(() => {
     if (isMounted) {
       fetch(`${process.env.REACT_APP_API_URL}/products`)
-      .then((res) => res.json())
-      .then((data) => {        
-        if (data) {
-          setProducts(data.filter(
-            (product) => product.isActive
-          ));
-        }
-      });
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            setProducts(data.filter((product) => product.isActive));
+          }
+        });
     }
 
     return () => {
       setIsMounted(false);
     };
-  }, [isMounted,products]);
+  }, [isMounted, products]);
 
   const productList = products.map((product) => (
     <ProductCard key={product._id} product={product} />
