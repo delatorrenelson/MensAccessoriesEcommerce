@@ -1,22 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Container,
-  Alert,
   Tab,
+  Alert,
   Tabs,
 } from "react-bootstrap";
-
+import UserContext from "../UserContext";
 import OrderCard from "../components/OrderCard";
 
 export default function UserOrders() {
+  const { user } = useContext(UserContext);
   const [orders, setOrders] = useState([]);
   const [isMounted, setIsMounted] = useState(true);
-
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (isMounted) {
-      fetch(`${process.env.REACT_APP_API_URL}/order/orders`, {
+      fetch(`${process.env.REACT_APP_API_URL}/order/myorder`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -27,13 +27,14 @@ export default function UserOrders() {
           if (order) {
             setOrders(order);
           }
-        });
+        });      
     }
 
     return () => {
       setIsMounted(false);
     };
-  }, [isMounted, orders, token]);
+  }, [orders, isMounted, token]);
+
 
   const cancelledOrders = orders
     .filter((order) => order.status === "cancelled")
@@ -49,12 +50,12 @@ export default function UserOrders() {
     .sort((a, b) => b.createdOn - a.createdOn);
 
   return (
-    <Container className="card p-4">
-      <h3 className="text-center">Orders</h3>
+    <Container>
+      <h3 className="text-center">Order History</h3>
       <Tabs
         defaultActiveKey="toShip"
         id="uncontrolled-tab-example"
-        className="justify-content-around nav nav-pills flex-column flex-sm-row border-bottom-0"
+        className="mb-5 justify-content-aroun nav nav-pills no-wrap border-bottom-0"
       >
         <Tab eventKey="toShip" title="To Ship" className="flex-sm-fill">
           {toShipOrders.length > 0 ? (
@@ -62,29 +63,25 @@ export default function UserOrders() {
               return <OrderCard order={order} key={order._id} />;
             })
           ) : (
-            <Container>
-              <Alert variant="warning">
-                <Alert.Heading className="text-center">
-                  No Order List
-                </Alert.Heading>
-              </Alert>
-            </Container>
+            <Alert variant="warning">
+              <Alert.Heading className="text-center">
+                No Order List
+              </Alert.Heading>
+            </Alert>
           )}
         </Tab>
 
-        <Tab eventKey="toRecieve" title="Shipped Out" className="flex-sm-fill">
+        <Tab eventKey="toRecieve" title="To Receive" className="flex-sm-fill">
           {toRecieveOrders.length > 0 ? (
             toRecieveOrders.map((order) => {
               return <OrderCard order={order} key={order._id} />;
             })
           ) : (
-            <Container className="mt-3">
-              <Alert variant="warning">
-                <Alert.Heading className="text-center">
-                  No Order List
-                </Alert.Heading>
-              </Alert>
-            </Container>
+            <Alert variant="warning">
+              <Alert.Heading className="text-center">
+                No Order List
+              </Alert.Heading>
+            </Alert>
           )}
         </Tab>
         <Tab eventKey="completed" title="Completed" className="flex-sm-fill">
@@ -93,13 +90,11 @@ export default function UserOrders() {
               return <OrderCard order={order} key={order._id} />;
             })
           ) : (
-            <Container className="mt-3">
-              <Alert variant="warning">
-                <Alert.Heading className="text-center">
-                  No Completed Order List
-                </Alert.Heading>
-              </Alert>
-            </Container>
+            <Alert variant="warning">
+              <Alert.Heading className="text-center">
+                No Order List
+              </Alert.Heading>
+            </Alert>
           )}
         </Tab>
         <Tab eventKey="canelled" title="Cancelled" className="flex-sm-fill">
@@ -108,13 +103,11 @@ export default function UserOrders() {
               return <OrderCard order={order} key={order._id} />;
             })
           ) : (
-            <Container className="mt-3">
-              <Alert variant="warning">
-                <Alert.Heading className="text-center">
-                  No Cancelled Order List
-                </Alert.Heading>
-              </Alert>
-            </Container>
+            <Alert variant="warning">
+              <Alert.Heading className="text-center">
+                No Order List
+              </Alert.Heading>
+            </Alert>
           )}
         </Tab>
       </Tabs>

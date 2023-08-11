@@ -10,6 +10,7 @@ import {
   Alert,
   Toast,
   Image,
+  Card,
 } from "react-bootstrap";
 import { formatNumber } from "../utils/NumberUtils";
 
@@ -18,7 +19,7 @@ import { faCartPlus } from "@fortawesome/free-solid-svg-icons";
 
 import "./ProductDetails.scss";
 
-import EditProduct from "../pages/EditProduct";
+import EditProduct from "./EditProduct";
 
 import { useContext } from "react";
 import UserContext from "../UserContext";
@@ -155,28 +156,30 @@ export default function ProductDetails(props) {
   return user.isAdmin ? (
     <EditProduct />
   ) : (
-    <Container className={"my-3 card p-3"}>
-      <Row>
-        <Col md={6}>
-          {imageURL !== "" ? (
-            <Image alt={`${productName}`} src={imageURL} rounded fluid />
-          ) : (
-            <Image
-              alt={`${productName}`}
-              rounded
-              src={`https://via.placeholder.com/300?text=${productName}`}
-              fluid
-            />
-          )}
-        </Col>
-        <Col md={6}>
-          <h3>{productName}</h3>
-          <p>{description}</p>
-          <p>{formatNumber(price)}</p>
-          <p>Stocks: {stock}</p>
-          {stock !== 0 ? cartItemControl() : zeroStock()}
-        </Col>
-      </Row>
+    <Container className={"my-3"}>
+      <Card>
+        <Card.Body className={"d-flex flex-column flex-md-row justify-content-around"}>
+          <Col md={6}>
+            {imageURL !== "" ? (
+              <Image alt={`${productName}`} src={imageURL} rounded fluid />
+            ) : (
+              <Image
+                alt={`${productName}`}
+                rounded
+                src={`https://via.placeholder.com/300?text=${productName}`}
+                fluid
+              />
+            )}
+          </Col>
+          <Col md={6}>
+            <h3>{productName}</h3>
+            <p>{description}</p>
+            <p>{formatNumber(price)}</p>
+            <p>Stocks: {stock}</p>
+            {stock !== 0 ? cartItemControl() : zeroStock()}
+          </Col>
+        </Card.Body>
+      </Card>
     </Container>
   );
 }

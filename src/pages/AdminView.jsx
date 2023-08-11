@@ -25,25 +25,28 @@ export default function AdminView({ props }) {
 
   const history = useHistory();
 
-  const searchProduct = useCallback((e) => {
-    if (e !== "") {
-      fetch(`${process.env.REACT_APP_API_URL}/products/q/${e}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data) {
-            setProducts(data);
-          }
-        });
-    }else{
-      fetch(`${process.env.REACT_APP_API_URL}/products`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data) {
-            setProducts(data);
-          }
-        });      
-    }
-  },[setProducts]);
+  const searchProduct = useCallback(
+    (e) => {
+      if (e !== "") {
+        fetch(`${process.env.REACT_APP_API_URL}/products/q/${e}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data) {
+              setProducts(data);
+            }
+          });
+      } else {
+        fetch(`${process.env.REACT_APP_API_URL}/products`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data) {
+              setProducts(data);
+            }
+          });
+      }
+    },
+    [setProducts]
+  );
 
   useEffect(() => {
     if (isMounted) {
@@ -70,8 +73,7 @@ export default function AdminView({ props }) {
   };
 
   return (
-    <Container md={6} className="card p-4">
-      <h1 className="text-center">Products</h1>
+    <Container md={6} className="card p-4" fluid>
       <Row>
         <Col>
           <InputGroup>
@@ -101,7 +103,7 @@ export default function AdminView({ props }) {
         </Col>
       </Row>
       {products.length > 0 ? (
-        <Table size="sm" className="mt-4" hover>
+        <Table size="sm" className="mt-4" hover responsive>
           <thead>
             <tr className="align-middle">
               <td className="fw-bold text-muted text-capitalize text-start align-middle">
@@ -136,7 +138,7 @@ export default function AdminView({ props }) {
                 <tr
                   key={product._id}
                   className={product.isActive ? "" : "table-danger"}
-                  onClick={()=> handleRowClick(product)}
+                  onClick={() => handleRowClick(product)}
                 >
                   <td>
                     {i + 1}

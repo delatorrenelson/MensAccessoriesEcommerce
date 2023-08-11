@@ -1,3 +1,14 @@
+.products{
+  --bs-gutter-x: .5rem;
+}
+
+.accordion .item .accordion-header button,
+.accordion-button{
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;  
+}
+
 .lds-ellipsis {
     display: inline-block;
     position: relative;

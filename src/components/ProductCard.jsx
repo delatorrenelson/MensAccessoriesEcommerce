@@ -8,43 +8,42 @@ export default function ProductCard({ product }) {
   const { _id, productName, description, price, rating, color, imageURL } =
     product;
 
-  const rate = (stars) => `⭐⭐⭐⭐⭐`.slice(5 - stars, 10 - stars);
+  // const rate = (stars) => `⭐⭐⭐⭐⭐`.slice(5 - stars, 10 - stars);
 
   return (
-    <Col key={_id}  md={4} lg={3} className="g-4">
+    <Col key={_id} className="product-card" xs={6} md={4} lg={3}>
       <Link
         to={{ pathname: `/products/${_id}`, state: product }}
         style={{ textDecoration: "none", color: "inherit" }}
-        className="product-card"
+        className=""
       >
-        <Card className="d-flex flex-column">
+        <Card className="">
           {imageURL !== null ? (
             <Card.Img
               variant="top"
-              className="fluid card-img"              
+              className="card-img border border-bottom-1 border-black-subtle"
               src={imageURL}
               alt={productName}
             />
           ) : (
             <Card.Img
               variant="top"
-              className="fluid card-img"              
+              className="bg-danger card-img border border-bottom-1 border-black-subtle"
               src={`https://via.placeholder.com/300?text=${productName}`}
               alt={productName}
             />
           )}
           <Card.Body className="d-flex flex-column flex-fill">
-            <Card.Subtitle>{productName}</Card.Subtitle>
-            <Card.Text className={"description card-text"}>
+            <Card.Title className="h6">{productName}</Card.Title>
+            <Card.Text className={"description fs-6"}>
               {description} - {color}
             </Card.Text>
-          </Card.Body>
-          <Card.Body className={""}>
-            <Card.Text className={"float-start"}>{`${formatNumber(
-              price
-            )}`}</Card.Text>
-            <Card.Text className={"float-end"}>{rating} sold</Card.Text>
-            {/* <Card.Text className={"float-end"}>{`${rate(Math.floor(Math.random() * (5 - 1 + 1)) + 1)}`}</Card.Text> */}
+            <Card.Text className="d-flex">
+              <span className="fw-bold flex-grow-1">{`${formatNumber(
+                price
+              )}`}</span>
+              <span className="text-end">{rating} sold</span>
+            </Card.Text>
           </Card.Body>
         </Card>
       </Link>

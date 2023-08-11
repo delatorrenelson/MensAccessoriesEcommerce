@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import ProductCard from "../components/ProductCard";
 import UserContext from "../UserContext";
 
-import Dasboard from "../pages/Dashboard";
+import Dasboard from "./Dashboard";
 import Loader from "../components/Loader";
 
 export default function Home() {
@@ -32,7 +32,7 @@ const [isMounted, setIsMounted] = useState(true)
     return () => {
       setIsMounted(false)
     };
-  }, [products]);
+  }, [products, isMounted]);
 
   return (
     <Container className={"my-3"}>

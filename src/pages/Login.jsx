@@ -1,8 +1,7 @@
-import { useState, useEffect, useContext } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { useState, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
 import Swal from "sweetalert2";
 import UserContext from "../UserContext";
 
@@ -14,6 +13,7 @@ export default function Login() {
 
   const loginUser = (e) => {
     e.preventDefault();
+
     fetch(`${process.env.REACT_APP_API_URL}/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -25,8 +25,8 @@ export default function Login() {
       .then((res) => res.json())
       .then((data) => {
         if (typeof data.accessToken !== "undefined") {
-          localStorage.setItem("token", data.accessToken); 
-          localStorage.setItem("cart", JSON.stringify([]));          
+          localStorage.setItem("token", data.accessToken);
+          localStorage.setItem("cart", JSON.stringify([]));
           fetch(`${process.env.REACT_APP_API_URL}/users/details`, {
             headers: {
               Authorization: `Bearer ${data.accessToken}`,
@@ -36,18 +36,17 @@ export default function Login() {
             .then((data) => {
               setUser({
                 id: data._id,
-                isAdmin: data.isAdmin,                
+                isAdmin: data.isAdmin,
               });
 
-              user.cart = JSON.parse(localStorage.getItem("cart"))
+              user.cart = JSON.parse(localStorage.getItem("cart"));
 
-              Swal.fire({
-                title: "Login successful",
-                icon: "success",
-                text: "Welcome to Ecommerce",
-              })
-
-              history.push("/home");
+              history.push("/products");
+              // Swal.fire({
+              //   title: "Login successful",
+              //   icon: "success",
+              //   text: "Welcome to Ecommerce",
+              // })
             });
         } else {
           Swal.fire({
@@ -62,8 +61,8 @@ export default function Login() {
   return (
     <Container className={"my-3"}>
       <Row>
-        <Col md={{ span: 4, offset: 4 }}>
-          <Form onSubmit={(e) => loginUser(e)} className="my-3 card p-4">
+        <Col md={{ span: 6, offset: 3 }} lg={{span: 4, offset: 4}}>
+          <Form onSubmit={(e) => loginUser(e)} className="card p-4">
             <h1 className={"text-center"}>Login</h1>
             <Form.Group controlId="email" className="my-4">
               <Form.Label>Email</Form.Label>
@@ -76,7 +75,7 @@ export default function Login() {
               />
             </Form.Group>
 
-            <Form.Group controlId="password" className="my-4">
+            <Form.Group controlId="password">
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
@@ -87,7 +86,7 @@ export default function Login() {
               />
             </Form.Group>
 
-            <Form.Group className="my-4 d-flex justify-content-center">
+            <Form.Group className="my-4 d-flex flex-column align-items-center justify-content-center">
               <Button
                 variant="primary"
                 type="submit"
@@ -95,21 +94,16 @@ export default function Login() {
                 style={{ width: "10rem" }}
               >
                 Login
-              </Button>
-              
-            </Form.Group>
-            <Form.Group className="my-4 d-flex justify-content-between">
-            <Link
-                to={{ pathname: `./register` }}
-                className="flex-fill text-center form-text"
+              </Button>            
+              <Link
+                to={{ pathname: `./forgot-password` }}
+                className="flex-fill text-center form-text text-sm-center"
               >
                 Forgot Password
               </Link>
-            </Form.Group>
-            <Form.Group className="my-4 d-flex justify-content-between">
               <Link
                 to={{ pathname: `./register` }}
-                className="flex-fill text-center form-text"
+                className="flex-fill text-center form-text text-xs-center"
               >
                 Sign Up
               </Link>

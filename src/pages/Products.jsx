@@ -5,8 +5,8 @@ import {
 } from "react-bootstrap";
 
 
-import AdminView from "../pages/AdminView"
-import UserView from "../pages/UserView"
+import AdminView from "./AdminView"
+import UserView from "./UserView"
 
 export default function Products() {
   const { user } = useContext(UserContext);

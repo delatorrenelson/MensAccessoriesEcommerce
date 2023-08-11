@@ -1,8 +1,10 @@
-.product-card {
+.product-card {    
   .card {
+    $h : 24rem;
     background: #fff;
     border-radius: 0.4em;
-    max-height: 400px;
+    max-height: $h;
+    min-height: $h;
     overflow: hidden;
     cursor: pointer;
     // box-shadow: 0 13px 27px -5px hsla(240, 30.1%, 28%, 0.25), 0 8px 16px -8px hsla(0, 0%, 0%, 0.3), 0 -6px 16px -6px hsla(0, 0%, 0%, 0.03);
@@ -19,13 +21,16 @@
     // box-shadow: 0 13px 40px -5px hsla(240, 30.1%, 28%, 0.12), 0 8px 32px -8px hsla(0, 0%, 0%, 0.14), 0 -6px 32px -6px hsla(0, 0%, 0%, 0.02);
   }
 
-  .card-img-top,
-  .card-img,img {
+  .card-img{
+    $h: 16rem;
+    border-radius: 0;
+    flex-grow: max;
     object-fit: contain;
-    overflow: hidden;
-    min-height: 240x;
-    height: 240px;
-    max-height: 240px;
+    object-position: center;
+    overflow: hidden;        
+    min-height: $h;
+    height: $h;
+    max-height: $h;
   }
 
   .card-subtitle {
@@ -40,7 +45,7 @@
   .description {
     overflow: hidden !important;
     display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
+    -webkit-line-clamp: 1 !important;
     -webkit-box-orient: vertical !important;
   }
 }

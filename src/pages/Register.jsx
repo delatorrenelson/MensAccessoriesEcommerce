@@ -17,18 +17,18 @@ export default function Register() {
   const registerUser = (e) => {
     e.preventDefault();
 
-    if(mobileNo.length !== 11){
+    if (mobileNo.length !== 11) {
       Swal.fire({
         title: "Check Mobile Number",
         icon: "error",
-      });      
-    }    
+      });
+    }
 
-    if(password !== confirmPassword){
+    if (password !== confirmPassword) {
       Swal.fire({
         title: "Password Mismatch",
         icon: "error",
-      });           
+      });
     }
 
     if (
@@ -50,7 +50,7 @@ export default function Register() {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data)
+          console.log(data);
           if (data) {
             Swal.fire({
               title: "Email already registered",
@@ -74,9 +74,8 @@ export default function Register() {
               .then((data) => {
                 if (data) {
                   Swal.fire({
-                    title: "Registration successful",
+                    text: "Registration successful",
                     icon: "success",
-                    text: "Welcom to Zuitt!",
                   });
                   history.push("/login"); // redirect to login page
                 } else {
@@ -88,13 +87,11 @@ export default function Register() {
                 }
               });
           }
-        });      
+        });
       setIsActive(true);
     } else {
       setIsActive(false);
-    }    
-
-
+    }
   };
 
   useEffect(() => {
@@ -124,8 +121,13 @@ export default function Register() {
 
   return (
     <Container className={"my-3"}>
-      <Row className="d-flex d-flex-row justify-content-center">
-        <Col md={6} lg={6} sm={12} className="card p-4">
+      {/* <Row className="d-flex d-flex-row justify-content-center"> */}
+      <Row className="">
+        <Col
+          md={{ span: 6, offset: 3 }}
+          lg={{ span: 4, offset: 4 }}
+          className="card p-4"
+        >
           <Form onSubmit={(e) => registerUser(e)}>
             <h1 className={"text-center"}>Sign Up</h1>
             <Form.Group className="mb-3" controlId="firstName">
@@ -160,24 +162,30 @@ export default function Register() {
             </Form.Group>
             <Form.Group className="mb-3" controlId="email">
               <Form.Label>Email address</Form.Label>
-              <Form.Control 
+              <Form.Control
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}              
-              required type="email" placeholder="Enter email" />
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                type="email"
+                placeholder="Enter email"
+              />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="password">
               <Form.Label>Password</Form.Label>
-              <Form.Control 
+              <Form.Control
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}              
-              required type="password" placeholder="Password" />
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                type="password"
+                placeholder="Password"
+              />
             </Form.Group>
             <Form.Group className="mb-3" controlId="confirmPassword">
               <Form.Label>Confirm Password</Form.Label>
               <Form.Control
-                              value={confirmPassword}
-                              onChange={(e) => setConfirmPassword(e.target.value)}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 type="password"
                 placeholder="Confirm Password"

@@ -8,7 +8,6 @@ export default function OrderCard({ order }) {
   const [isMounted, setIsMounted] = useState(true);
   const { user } = useContext(UserContext);
 
-
   const token = localStorage.getItem("token");
 
   const updateOrderStatus = (orderId, orderStatus) => {
@@ -34,18 +33,16 @@ export default function OrderCard({ order }) {
     return () => {
       setIsMounted(false);
     };
-  }, [order,isMounted]);
+  }, [order, isMounted]);
 
   return (
     <Card className={statusClass}>
       <Card.Header className="d-flex d-flex-column justify-content-around">
-        {user.isAdmin
-          ? null
-          : 
+        {user.isAdmin ? null : (
           <Card.Text className="text-start">
-              Order by: {user.firstName}
-            </Card.Text>
-            }
+            Order by: {user.firstName}
+          </Card.Text>
+        )}
         <Card.Text className="text-end flex-fill">
           Date Ordered: {formatDate(order.createdOn)}
         </Card.Text>
@@ -61,8 +58,7 @@ export default function OrderCard({ order }) {
                       to={{
                         pathname: `/products/${product._id}`,
                         state: product,
-                      }}
-                      style={{ color: "inherit" }}
+                      }}                      
                     >
                       {product.productName}
                     </Link>
@@ -71,11 +67,10 @@ export default function OrderCard({ order }) {
                     {product.description} - {product.color.toUpperCase()}
                   </td>
                   <td className="text-end">
-                    {" "}
                     <small>
                       {formatNumber(product.price)} x {product.quantity}{" "}
                     </small>
-                    <strong>{formatNumber(product.subTotal)}</strong>
+                    <p>{formatNumber(product.subTotal)}</p>
                   </td>
                 </tr>
               );
@@ -85,8 +80,11 @@ export default function OrderCard({ order }) {
       </Card.Body>
       <Card.Footer>
         <Card.Text className="text-end">
-          <h5>Total: {formatNumber(order.totalPrice)}</h5>
-          <h6>Quantity: {order.totalQuantity}</h6>
+          Total: {formatNumber(order.totalPrice)}
+        </Card.Text>
+
+        <Card.Text className="text-end">
+          Quantity: {order.totalQuantity}
         </Card.Text>
 
         {order.status === "to ship" ? (
