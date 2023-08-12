@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
-      <footer className={"py-3 my-4 fixed-bottom"}>
-        <Nav className={"nav  border-top pb-3 mb-3 justify-content-center"}>
+      <footer className={"py-3 my-4 sticky-bottom"}>
+        <Nav className={"nav  border-top sticky-bottom justify-content-center"}>
           <Nav.Item>
             <Link className="nav-link px-2 text-muted" to={{ pathname: `/` }}>
               Home

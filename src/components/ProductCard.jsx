@@ -11,11 +11,10 @@ export default function ProductCard({ product }) {
   // const rate = (stars) => `⭐⭐⭐⭐⭐`.slice(5 - stars, 10 - stars);
 
   return (
-    <Col key={_id} className="product-card" xs={6} md={4} lg={3}>
+    <Col key={_id} className="product-card" xs={6} md={3}>
       <Link
         to={{ pathname: `/products/${_id}`, state: product }}
-        style={{ textDecoration: "none", color: "inherit" }}
-        className=""
+        style={{ textDecoration: "none", color: "inherit" }}        
       >
         <Card className="">
           {imageURL !== null ? (

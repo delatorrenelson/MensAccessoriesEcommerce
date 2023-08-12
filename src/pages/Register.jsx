@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import {  useHistory } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import Swal from "sweetalert2";
 
@@ -137,6 +137,7 @@ export default function Register() {
                 onChange={(e) => setFirstName(e.target.value)}
                 required
                 type="text"
+                autoComplete="true"
                 placeholder="First Name"
               />
             </Form.Group>
@@ -147,6 +148,7 @@ export default function Register() {
                 onChange={(e) => setLastName(e.target.value)}
                 required
                 type="text"
+                autoComplete="true"
                 placeholder="Last Name"
               />
             </Form.Group>
@@ -157,6 +159,7 @@ export default function Register() {
                 onChange={(e) => setMobileNo(e.target.value)}
                 required
                 type="text"
+                autoComplete="true"
                 placeholder="Mobile Number"
               />
             </Form.Group>
@@ -167,6 +170,7 @@ export default function Register() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 type="email"
+                autoComplete="true"
                 placeholder="Enter email"
               />
             </Form.Group>
@@ -178,6 +182,7 @@ export default function Register() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 type="password"
+                autoComplete="true"
                 placeholder="Password"
               />
             </Form.Group>
@@ -188,6 +193,7 @@ export default function Register() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 type="password"
+                autoComplete="true"
                 placeholder="Confirm Password"
               />
             </Form.Group>

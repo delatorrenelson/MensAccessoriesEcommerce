@@ -68,7 +68,7 @@ export default function OrderCard({ order }) {
                   </td>
                   <td className="text-end">
                     <small>
-                      {formatNumber(product.price)} x {product.quantity}{" "}
+                      {formatNumber(product.price)} x {product.quantity}
                     </small>
                     <p>{formatNumber(product.subTotal)}</p>
                   </td>
